@@ -1,4 +1,3 @@
-// controllers/userController.js
 const User = require('../models/User');
 
 // @desc    Register user
@@ -8,7 +7,6 @@ exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -17,14 +15,12 @@ exports.registerUser = async (req, res) => {
       });
     }
 
-    // Create new user
     const user = await User.create({
       name,
       email,
       password
     });
 
-    // Set avatar if uploaded
     if (req.file) {
       user.avatar = req.file.path;
       await user.save();
@@ -47,7 +43,6 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate email & password
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -55,7 +50,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check for user
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -64,7 +58,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check if password matches
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -112,7 +105,6 @@ exports.updateDetails = async (req, res) => {
       email: req.body.email
     };
 
-    // Update avatar if uploaded
     if (req.file) {
       fieldsToUpdate.avatar = req.file.path;
     }
@@ -156,7 +148,6 @@ exports.deleteUser = async (req, res) => {
 };
 
 const sendTokenResponse = (user, statusCode, res) => {
-  // Create token
   const token = user.getSignedToken();
 
   res.status(statusCode).json({

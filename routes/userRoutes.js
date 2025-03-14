@@ -1,4 +1,3 @@
-// routes/userRoutes.js
 const express = require('express');
 const {
   registerUser,
@@ -20,7 +19,6 @@ router.get('/me', protect, getMe);
 router.put('/me', protect, upload.single('avatar'), updateDetails);
 router.delete('/me', protect, deleteUser);
 
-// Admin routes
 router.get('/', protect, authorize('admin'), getUsers);
 router.get('/:id', protect, authorize('admin'), getUserById);
 

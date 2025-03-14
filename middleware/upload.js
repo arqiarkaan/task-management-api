@@ -1,7 +1,6 @@
 const multer = require('multer');
 const path = require('path');
 
-// Konfigurasi penyimpanan
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -11,7 +10,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Filter file
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
 

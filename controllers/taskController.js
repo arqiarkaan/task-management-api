@@ -6,10 +6,8 @@ const Project = require('../models/Project');
 // @access  Private
 exports.createTask = async (req, res) => {
   try {
-    // Add user to req.body
     req.body.createdBy = req.user.id;
 
-    // Check if project exists
     const project = await Project.findById(req.body.project);
     if (!project) {
       return res.status(404).json({
@@ -18,7 +16,6 @@ exports.createTask = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to add task to this project
     if (
       req.user.role !== 'admin' &&
       project.createdBy.toString() !== req.user.id
@@ -49,18 +46,13 @@ exports.createTask = async (req, res) => {
 // @access  Private
 exports.getTasks = async (req, res) => {
   try {
-    // Build query
     let query;
 
-    // Filter by project if specified
     if (req.query.project) {
       query = { project: req.query.project };
     }
 
-    // Filter by user if not admin
     if (req.user.role !== 'admin') {
-      // If user is not admin, they can only see tasks they're assigned to
-      // or tasks in projects they created
       const projects = await Project.find({ createdBy: req.user.id });
       const projectIds = projects.map((project) => project._id);
 
@@ -123,7 +115,6 @@ exports.getTask = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to view this task
     if (
       req.user.role !== 'admin' &&
       task.assignedTo._id.toString() !== req.user.id &&
@@ -162,7 +153,6 @@ exports.updateTask = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to update this task
     if (
       req.user.role !== 'admin' &&
       task.assignedTo.toString() !== req.user.id &&
@@ -206,7 +196,6 @@ exports.deleteTask = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to delete this task
     if (
       req.user.role !== 'admin' &&
       task.createdBy.toString() !== req.user.id
@@ -217,7 +206,7 @@ exports.deleteTask = async (req, res) => {
       });
     }
 
-    await task.remove();
+    await task.deleteOne();
 
     res.status(200).json({
       success: true,

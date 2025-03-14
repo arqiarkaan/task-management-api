@@ -1,4 +1,3 @@
-// controllers/projectController.js
 const Project = require('../models/Project');
 const Task = require('../models/Task');
 
@@ -7,7 +6,6 @@ const Task = require('../models/Task');
 // @access  Private
 exports.createProject = async (req, res) => {
   try {
-    // Add user to req.body
     req.body.createdBy = req.user.id;
 
     const project = await Project.create(req.body);
@@ -30,7 +28,6 @@ exports.createProject = async (req, res) => {
 // @access  Private
 exports.getProjects = async (req, res) => {
   try {
-    // Filter by user if not admin
     let query;
     if (req.user.role !== 'admin') {
       query = { createdBy: req.user.id };
@@ -72,7 +69,6 @@ exports.getProject = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to view this project
     if (
       req.user.role !== 'admin' &&
       project.createdBy.toString() !== req.user.id
@@ -83,7 +79,6 @@ exports.getProject = async (req, res) => {
       });
     }
 
-    // Get tasks for this project
     const tasks = await Task.find({ project: project._id }).populate({
       path: 'assignedTo',
       select: 'name email avatar',
@@ -119,7 +114,6 @@ exports.updateProject = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to update this project
     if (
       req.user.role !== 'admin' &&
       project.createdBy.toString() !== req.user.id
@@ -162,7 +156,6 @@ exports.deleteProject = async (req, res) => {
       });
     }
 
-    // Check if user is authorized to delete this project
     if (
       req.user.role !== 'admin' &&
       project.createdBy.toString() !== req.user.id
@@ -173,11 +166,9 @@ exports.deleteProject = async (req, res) => {
       });
     }
 
-    // Delete all tasks associated with this project
     await Task.deleteMany({ project: req.params.id });
 
-    // Delete the project
-    await project.remove();
+    await project.deleteOne();
 
     res.status(200).json({
       success: true,
